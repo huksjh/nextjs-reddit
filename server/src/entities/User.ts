@@ -1,7 +1,7 @@
 import { Exclude } from "class-transformer";
 import { IsEmail, Length } from "class-validator";
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, Index, OneToMany } from "typeorm";
-
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, Index, OneToMany, BeforeInsert } from "typeorm";
+import bcrypt from "bcryptjs";
 /**
  * User 테이블
  * id, createdAt, updatedAt, email, username, password, posts, votes,
@@ -38,4 +38,10 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Vote, (vote) => vote.user)
     votes: Vote[];
+
+    // 등록전 비밀번호 변환
+    @BeforeInsert()
+    async hashPassword() {
+        this.password = await bcrypt.hash(this.password, 6);
+    }
 }
