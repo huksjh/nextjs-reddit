@@ -1,14 +1,18 @@
 import { Exclude } from "class-transformer";
 import { IsEmail, Length } from "class-validator";
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, Index, OneToMany, BeforeInsert } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, Index, OneToMany, BeforeInsert } from "typeorm";
+import BaseEntity from "./Entity";
 import bcrypt from "bcryptjs";
+
+import Post from "./Post";
+import Vote from "./Vote";
 /**
  * User 테이블
  * id, createdAt, updatedAt, email, username, password, posts, votes,
  */
 
 @Entity("users")
-export class User extends BaseEntity {
+export default class User extends BaseEntity {
     /*
      * BaseEntity 통해서
      * 기본  id, createdAt, updatedAt 3가지는 포함시킴
