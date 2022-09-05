@@ -1,6 +1,7 @@
 import { Exclude, Expose } from "class-transformer";
 import { text } from "stream/consumers";
-import { Column, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
+import { BeforeInsert, Column, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
+import { makeId, slugify } from "../utils/helpers";
 import BaseEntity from "./Entity";
 import Sub from "./Sub";
 import User from "./User";
@@ -63,5 +64,18 @@ export default class Post extends BaseEntity {
 
     @Expose() get VoteScore(): number {
         return this.votes?.reduce((memo, curt) => (memo) => curt.value || 0, 0);
+    }
+
+    protected userVote: member;
+
+    setUserVote(user: User) {
+        const index = this.votes?.findIndex((v) => v.username === user.username);
+        this.userVote = index > -1 ? this.votes[index].value : 0;
+    }
+
+    @BeforeInsert()
+    makeIdAndSlug() {
+        this.identifier = makeId(7);
+        this.slug = slugify(this.title);
     }
 }
