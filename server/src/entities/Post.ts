@@ -1,12 +1,14 @@
 import { Exclude, Expose } from "class-transformer";
 import { text } from "stream/consumers";
-import { BeforeInsert, Column, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
+import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { makeId, slugify } from "../utils/helpers";
 import BaseEntity from "./Entity";
 import Sub from "./Sub";
 import User from "./User";
 import Vote from "./Vote";
+import Comment from "./Comment";
 
+@Entity("posts")
 export default class Post extends BaseEntity {
     @Index()
     @Column()
@@ -54,7 +56,7 @@ export default class Post extends BaseEntity {
 
     // 게시물 url 생성
     @Expose() get url(): string {
-        return `/r/${this.subNname}/${this.identifier}/${this.slug}`;
+        return `r/${this.subNname}/${this.identifier}/${this.slug}`;
     }
 
     // 댓글 개수 구하기
@@ -62,17 +64,19 @@ export default class Post extends BaseEntity {
         return this.comments?.length;
     }
 
-    @Expose() get VoteScore(): number {
-        return this.votes?.reduce((memo, curt) => (memo) => curt.value || 0, 0);
+    // 추천 개수
+    @Expose() get voteScore(): number {
+        return this.votes?.reduce((memo, curt) => memo + (curt.value || 0), 0);
     }
 
-    protected userVote: member;
+    protected userVote: number;
 
     setUserVote(user: User) {
         const index = this.votes?.findIndex((v) => v.username === user.username);
         this.userVote = index > -1 ? this.votes[index].value : 0;
     }
 
+    // 저장전 처리할 함수
     @BeforeInsert()
     makeIdAndSlug() {
         this.identifier = makeId(7);
