@@ -17,6 +17,12 @@ export const slugify = function (str) {
     return str;
 };
 
+/**
+ *  랜덤 id 생성
+ * @param length int 길이
+ * @returns
+ */
+
 export const makeId = function (length) {
     let result = "";
     let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

@@ -1,5 +1,4 @@
 import { Exclude, Expose } from "class-transformer";
-import { text } from "stream/consumers";
 import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { makeId, slugify } from "../utils/helpers";
 import BaseEntity from "./Entity";
@@ -24,7 +23,7 @@ export default class Post extends BaseEntity {
     @Column()
     slug: string;
 
-    // nullable 값이 없어도 등록가능하게
+    // nullable => 값이 없어도 등록가능하게
     @Column({ nullable: true, type: "text" })
     body: string;
 

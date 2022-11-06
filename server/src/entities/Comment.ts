@@ -1,10 +1,10 @@
 import { Exclude, Expose } from "class-transformer";
-import { BaseEntity, Column, Index, Entity, ManyToOne, JoinColumn, OneToMany, BeforeInsert } from "typeorm";
+import { Column, Index, Entity, ManyToOne, JoinColumn, OneToMany, BeforeInsert } from "typeorm";
 import { makeId, slugify } from "../utils/helpers";
+import BaseEntity from "./Entity";
 import Post from "./Post";
 import User from "./User";
 import Vote from "./Vote";
-
 /**
  * 댓글 테이블
  * id, createdAt, updatedAt, identifier, body, username, postId
