@@ -24,7 +24,7 @@ const Register = () => {
             });
             console.log("res", res);
             // 로그인 페이지로 이동
-            // router.push("/login");
+            router.push("/login");
         } catch (error: any) {
             console.log("erroir", error);
             setErrors(error?.response?.data || {});

@@ -1,13 +1,25 @@
+import axios from "axios";
 import Link from "next/link";
 import React, { FormEvent, useState } from "react";
 import InputGroup from "../components/InputGroup";
+import { useAuthDispath } from "../context/auth";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState({});
-    const handleSubmit = (event: FormEvent) => {
-        event?.preventDefault();
+    const [errors, setErrors] = useState<any>({});
+
+    const dispath = useAuthDispath();
+
+    const handleSubmit = async (event: FormEvent) => {
+        event.preventDefault();
+
+        try {
+            await axios.post("/auth/login", { email, password }, { withCredentials: true }); // withCredentials : true 도메인 주소가 달라도 cors 쿠키값 전달 설정
+        } catch (error: any) {
+            console.error(error);
+            setErrors(error.response.data || {});
+        }
     };
     return (
         <div className="bg-white">
