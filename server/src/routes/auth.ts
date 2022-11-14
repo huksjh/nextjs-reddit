@@ -20,7 +20,7 @@ const register = async (req: Request, res: Response) => {
         // 이메일과 유저이름 유효성 검사
         const emailUser = await User.findOneBy({ email });
         const usernameUser = await User.findOneBy({ username });
-
+        console.log("usernameUser", usernameUser);
         // 이메일 있으면 error 담기
         if (emailUser) errors.email = "이미 해당 이메일 주소가 사용중입니다.";
         if (usernameUser) errors.username = "이미 해당 이름이 사용중입니다.";
@@ -45,6 +45,7 @@ const register = async (req: Request, res: Response) => {
 
         // user 정보 유효성 검사
         errors = await validate(user);
+        console.log("errors length", errors.length);
         if (errors.length > 0) {
             console.log(mapErrors(errors));
             return res.status(400).json(mapErrors(errors));
@@ -58,10 +59,16 @@ const register = async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * 로그인
+ * @param req
+ * @param res
+ * @returns
+ */
 const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    console.log("email", email);
-    console.log("password", password);
+    //console.log("email", email);
+    //console.log("password", password);
     try {
         let errors: any = {};
         // 입력값 존재 여부
@@ -74,7 +81,6 @@ const login = async (req: Request, res: Response) => {
 
         // 디비에서 유저 찾기
         const user = await User.findOneBy({ email });
-
         // 유저가 존재 하지 않다면 에러 리턴
         if (!user) return res.status(400).json({ email: "이메일 주소가 존재하지 않습니다." });
 
@@ -88,7 +94,16 @@ const login = async (req: Request, res: Response) => {
         const token = jwt.sign({ email }, process.env.JWT_SECRET);
 
         // 쿠키생성
-        res.set("Set-Cookie", cookie.serialize("token", token));
+        res.set(
+            "Set-Cookie",
+            cookie.serialize("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 60 * 60 * 24 * 7, // 1주일
+                path: "/",
+            })
+        );
         return res.json({ user, token });
     } catch (error) {
         console.error(error);

@@ -1,5 +1,6 @@
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { FormEvent, useState } from "react";
 import InputGroup from "../components/InputGroup";
 import { useAuthDispath } from "../context/auth";
@@ -9,13 +10,19 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState<any>({});
 
+    const router = useRouter();
     const dispath = useAuthDispath();
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
         try {
-            await axios.post("/auth/login", { email, password }, { withCredentials: true }); // withCredentials : true 도메인 주소가 달라도 cors 쿠키값 전달 설정
+            const res = await axios.post("/auth/login", { email, password }, { withCredentials: true }); // withCredentials : true 도메인 주소가 달라도 cors 쿠키값 전달 설정
+            // console.log(res);
+            if (res.statusText == "OK") {
+                dispath("LOGIN", res.data?.user);
+                router.push("/");
+            }
         } catch (error: any) {
             console.error(error);
             setErrors(error.response.data || {});
